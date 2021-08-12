@@ -18,16 +18,30 @@ provider "aws" {
 }
 
 module "wordpress" {
-   source = "https://github.com/vorozhkojulia/wordpress-terraform"
+   source = "../wordpress-terraform-v2"
 
-   vpc_id           = "vpc-abcdef1234"
-   wordpress_subnet = "subnet-3d9d221c"
-   rds_subnet       = "subnet-39f39837"
+   vpc_id           = "vpc-af4a87d2"
+   wordpress_subnet = "subnet-bd2c9ddb"
+   rds_subnet       = ["subnet-bd2c9ddb", "subnet-3d9d221c"]
+}
+
+output "password" {
+    value = random_password.password_rds.result
+    sensitive = true
+}
+
+output "username" {
+    value = "admin"
+}
+
+output "database" {
+    value = "wp_database"
 }
 ```
 
 ## Inputs
 
+- VPC id
 - Subnet id for EC2 Wordpres and RDS MySQL
 
 ## Outpusts

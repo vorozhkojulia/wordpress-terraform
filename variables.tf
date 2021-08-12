@@ -7,5 +7,5 @@ variable "wordpress_subnet" {
 }
 
 variable "rds_subnet" {
-    type = string
+    type = list
 }
