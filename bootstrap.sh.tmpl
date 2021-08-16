@@ -11,6 +11,8 @@ sudo curl -O https://wordpress.org/latest.tar.gz
 sudo tar -zxvf latest.tar.gz
 sudo cp -Rfp wordpress/* html/
 
+# setting up a configuration file for a database. 
+# these variables are passed through templatefile Function in terraform code
 DBPASS="${db_pass}"
 DBNAME="${db_name}"
 DBUSER="${db_user}"
