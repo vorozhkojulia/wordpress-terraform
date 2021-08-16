@@ -10,3 +10,5 @@ sudo rm html/index.html
 sudo curl -O https://wordpress.org/latest.tar.gz
 sudo tar -zxvf latest.tar.gz
 sudo cp -Rfp wordpress/* html/
+
+source bootvars.sh

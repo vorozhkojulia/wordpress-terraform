@@ -48,3 +48,6 @@ output "database" {
 
 - Wordpress IP address
 - DB Endpoint
+- DB Name
+- DB Username
+- DB Password - You can show sensitive password using the command ```terraform output -json```

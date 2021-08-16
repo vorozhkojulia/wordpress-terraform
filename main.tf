@@ -16,7 +16,7 @@ data "aws_ami" "ubuntu" {
 
 resource "random_password" "password_rds" {
   length           = 16
-  special          = true
+  special          = false
   override_special = "_%@"
 }
 
@@ -26,7 +26,14 @@ resource "aws_instance" "wordpress" {
     subnet_id = var.wordpress_subnet
     vpc_security_group_ids = [aws_security_group.allow_http_ssh.id]
 
-    user_data = file("${path.module}/bootstrap.sh")
+    //user_data = file("${path.module}/bootstrap.sh")
+    user_data = templatefile(
+        "${path.module}/bootstrap.sh.tmpl", 
+        {db_pass = random_password.password_rds.result,
+         db_name = "wp_database",
+         db_user = "admin",
+         db_host = aws_db_instance.wp-db.address}
+        )
 
     tags = {
     Name = "wordpress"
@@ -100,7 +107,7 @@ resource "aws_security_group" "allow_mysql" {
     from_port = 3306
     to_port   = 3306
     protocol  = "tcp"
-    cidr_blocks = ["10.0.0.0/16"]
+    cidr_blocks = ["172.31.0.0/16"]
   }
 
   egress {
@@ -115,19 +122,28 @@ resource "aws_security_group" "allow_mysql" {
   }
 }
 
+output "wordpress_ip" {
+    description = "Wordpress instance ID:"
+    value       = aws_instance.wordpress.public_ip
+}
+
 output "endpoint" {
+    description = "DB instance MySQL endpoint:"
     value = aws_db_instance.wp-db.address
 }
 
-output "password" {
-    value = random_password.password_rds.result
-    sensitive = true
+output "database" {
+    description = "Name of DB instance MySQL:"
+    value = "wp_database"
 }
 
 output "username" {
+    description = "DB instance MySQL username:"
     value = "admin"
 }
 
-output "database" {
-    value = "wp_database"
+output "password" {
+    description = "DB instance MySQL sensitive password:"
+    value = random_password.password_rds.result
+    sensitive = true
 }

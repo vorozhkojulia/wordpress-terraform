@@ -1,0 +1,27 @@
+#!/bin/bash
+# install packages
+sudo apt-get update
+sudo apt-get install php php-mysql apache2 wget unzip -y
+
+# setup wordpress
+cd /var/www/
+sudo rm html/index.html
+
+sudo curl -O https://wordpress.org/latest.tar.gz
+sudo tar -zxvf latest.tar.gz
+sudo cp -Rfp wordpress/* html/
+
+DBPASS="${db_pass}"
+DBNAME="${db_name}"
+DBUSER="${db_user}"
+DBHOST="${db_host}"
+
+cd html
+sudo cp wp-config-sample.php wp-config.php
+sudo perl -pi -e "s/password_here/$DBPASS/g" wp-config.php
+sudo perl -pi -e "s/database_name_here/$DBNAME/g" wp-config.php
+sudo perl -pi -e "s/username_here/$DBUSER/g" wp-config.php
+sudo perl -pi -e "s/localhost/$DBHOST/g" wp-config.php
+
+sudo mkdir wp-content/uploads
+sudo chmod 775 wp-content/uploads
