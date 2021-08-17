@@ -61,7 +61,7 @@ Use the public ip address (output - ```wordpress_ip```) to run the WordPress ins
 ## Inputs
 
 - VPC id
-- Subnet id for EC2 Wordpres and RDS MySQL
+- Subnet id for EC2 Wordpress and at least two or more subnets for RDS MySQL
 
 ## Outpusts
 
