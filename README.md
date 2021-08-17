@@ -6,12 +6,15 @@ Terraform module which deploys Wordpress on AWS using EC2 and RDS.
 
 This is the list of resources that the module will create.
 
-- EC2 instance (ubuntu-focal-20.04-amd64-server and ```instance_type = "t2.micro"```)
+- EC2 instance (ubuntu-focal-20.04-amd64-server with ```instance_type = "t2.micro"```)
 - bootstrap.sh.tmpl file for setup wordpress und setting up a configuration file for a database using variables for ```wp-config.php```
 - RDS mysql instance (using ```random_password``` and ```instance_class = "db.t2.micro"```)
 - Security Groups to access both EC2 (allow_http_ssh) and MYSQL (allow_mysql) 
 
 ## Usage
+
+Ingress for Security group ```allow_mysql``` covers only ```cidr_blocks = ["172.31.0.0/16"]```.
+If you have another cidr blocks IPs addresses, then make changes in the security group ```allow_mysql```
 
 ```hcl
 provider "aws" {
