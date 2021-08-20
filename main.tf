@@ -14,7 +14,7 @@ data "aws_ami" "ubuntu" {
   owners = ["099720109477"] # Canonical
 }
 
-resource "random_password" "password_rds" {
+resource "random_password" "rds_password" {
   length           = 16
   special          = false
   override_special = "_%@"
@@ -29,10 +29,10 @@ resource "aws_instance" "wordpress" {
     //user_data = file("${path.module}/bootstrap.sh")
     user_data = templatefile(
         "${path.module}/bootstrap.sh.tmpl", 
-        {db_pass = random_password.password_rds.result,
-         db_name = "wp_database",
+        {db_pass = random_password.rds_password.result,
+         db_name = "db_wordpress",
          db_user = "admin",
-         db_host = aws_db_instance.wp-db.address}
+         db_host = aws_db_instance.db_mysql.address}
         )
 
     tags = {
@@ -75,21 +75,21 @@ resource "aws_security_group" "allow_http_ssh" {
   }
 }
 
-resource "aws_db_instance" "wp-db" {
+resource "aws_db_instance" "db_mysql" {
   allocated_storage    = 20
   storage_type         = "gp2"
   engine               = "mysql"
   engine_version       = "8.0.20"
   instance_class       = "db.t2.micro"
-  db_subnet_group_name = aws_db_subnet_group.wp-db-sub.name
-  name                 = "wp_database"
+  db_subnet_group_name = aws_db_subnet_group.db_mysql_subnet.name
+  name                 = "db_wordpress"
   username             = "admin"
-  password             = random_password.password_rds.result
+  password             = random_password.rds_password.result
   skip_final_snapshot  = true
   vpc_security_group_ids = [aws_security_group.allow_mysql.id]
 }
 
-resource "aws_db_subnet_group" "wp-db-sub" {
+resource "aws_db_subnet_group" "db_mysql_subnet" {
   name       = "wordpress"
   subnet_ids = var.rds_subnet
 
@@ -107,7 +107,8 @@ resource "aws_security_group" "allow_mysql" {
     from_port = 3306
     to_port   = 3306
     protocol  = "tcp"
-    cidr_blocks = ["172.31.0.0/16"]
+    #cidr_blocks = ["172.31.0.0/16"]
+    cidr_blocks = var.rds_cidr
   }
 
   egress {
@@ -120,30 +121,4 @@ resource "aws_security_group" "allow_mysql" {
   tags = {
     Name = "wordpress"
   }
-}
-
-output "wordpress_ip" {
-    description = "Wordpress instance ID:"
-    value       = aws_instance.wordpress.public_ip
-}
-
-output "endpoint" {
-    description = "DB instance MySQL endpoint:"
-    value = aws_db_instance.wp-db.address
-}
-
-output "database" {
-    description = "Name of DB instance MySQL:"
-    value = "wp_database"
-}
-
-output "username" {
-    description = "DB instance MySQL username:"
-    value = "admin"
-}
-
-output "password" {
-    description = "DB instance MySQL sensitive password:"
-    value = random_password.password_rds.result
-    sensitive = true
 }

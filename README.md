@@ -1,6 +1,6 @@
 ## AWS Terraform Wordpress module
 
-Terraform module which deploys Wordpress on AWS using EC2 and RDS.
+Terraform module which create Wordpress on AWS using EC2 and RDS MySQL.
 
 ## What will be created
 
@@ -13,9 +13,6 @@ This is the list of resources that the module will create.
 
 ## Usage
 
-Ingress for Security group ```allow_mysql``` covers only ```cidr_blocks = ["172.31.0.0/16"]```.
-If you have another cidr blocks IPs addresses, then make changes in the security group ```allow_mysql```
-
 ```hcl
 provider "aws" {
   region  = "us-east-1"
@@ -27,6 +24,7 @@ module "wordpress" {
    vpc_id           = "vpc-af4a87d2"
    wordpress_subnet = "subnet-bd2c9ddb"
    rds_subnet       = ["subnet-bd2c9ddb", "subnet-3d9d221c"]
+   rds_cidr         = ["172.31.0.0/16"]
 }
 
 output "wordpress_ip" {
@@ -34,34 +32,37 @@ output "wordpress_ip" {
     value       = module.wordpress.wordpress_ip
 }
 
-output "endpoint" {
+output "db_endpoint" {
     description = "DB instance MySQL endpoint:"
-    value = module.wordpress.endpoint
+    value = module.wordpress.db_endpoint
 }
 
-output "database" {
+output "db_name" {
     description = "Name of DB instance MySQL:"
-    value = "wp_database"
+    value = "db_wordpress"
 }
 
-output "username" {
+output "db_username" {
     description = "DB instance MySQL username:"
     value = "admin"
 }
 
-output "password" {
+output "db_password" {
     description = "DB instance MySQL sensitive password:"
-    value = module.wordpress.password
+    value = module.wordpress.db_password
     sensitive = true
 }
 ```
 
 Use the public ip address (output - ```wordpress_ip```) to run the WordPress installation. 
 
+![Wordpress installation](./wordpress_install.png) 
+
 ## Inputs
 
 - VPC id
 - Subnet id for EC2 Wordpress and at least two or more subnets for RDS MySQL
+- CIDR blocks for RDS MySQL
 
 ## Outpusts
 

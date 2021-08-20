@@ -9,3 +9,7 @@ variable "wordpress_subnet" {
 variable "rds_subnet" {
     type = list
 }
+
+variable "rds_cidr" {
+    type = list
+}
