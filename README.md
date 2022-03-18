@@ -6,8 +6,8 @@ Terraform module which create Wordpress on AWS using EC2 and RDS MySQL.
 
 This is the list of resources that the module will create.
 
-- EC2 instance (ubuntu-focal-20.04-amd64-server with ```instance_type = "t2.micro"```)
-- bootstrap.sh.tmpl file for setup wordpress und setting up a configuration file for a database using variables for ```wp-config.php```
+- EC2 instance (ubuntu-focal-20.04-amd64-server with type t2.micro)
+- ```wp-config.php``` using bootstrap.sh.tmpl file for setup wordpress und setting up a configuration file for a database
 - RDS mysql instance (using ```random_password``` and ```instance_class = "db.t2.micro"```)
 - Security Groups to access both EC2 (allow_http_ssh) and MYSQL (allow_mysql) 
 
@@ -60,14 +60,15 @@ Use the public ip address (output - ```wordpress_ip```) to run the WordPress ins
 
 ## Inputs
 
-- VPC id
-- Subnet id for EC2 Wordpress and at least two or more subnets for RDS MySQL
-- CIDR blocks for RDS MySQL
+- ```vpc_id``` - VPC id
+- ```wordpress_subnet``` - Subnet id for EC2 Wordpress
+- ```rds_subnet``` - at least two or more subnets for RDS MySQL
+- ```rds_cidr``` - CIDR blocks for RDS MySQL
 
 ## Outpusts
 
-- Wordpress IP address
-- DB Endpoint
-- DB Name
-- DB Username
-- DB Password - You can show sensitive password using the command ```terraform output -json```
+- ```wordpress_ip``` - Wordpress IP address
+- ```db_endpoint``` - DB Endpoint
+- ```db_name``` - DB Name
+- ```db_username``` - DB Username
+- ```db_password``` - DB Password - You can show sensitive password using the command ```terraform output -json```
